@@ -1,6 +1,7 @@
 import React from 'react';
 
-const Button = ({ children, variant = 'primary', className = '' }) => {
+// Tambahkan onClick di sini
+const Button = ({ children, variant = 'primary', className = '', onClick }) => {
   const baseStyle = "px-8 py-3.5 rounded-2xl font-bold transition-all duration-300 active:scale-95 font-inter text-sm shadow-xl";
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-600/20",
@@ -9,7 +10,11 @@ const Button = ({ children, variant = 'primary', className = '' }) => {
   };
 
   return (
-    <button className={`${baseStyle} ${variants[variant]} ${className}`}>
+    // Pasang onClick={onClick} agar fungsi dari luar bisa jalan
+    <button 
+      onClick={onClick} 
+      className={`${baseStyle} ${variants[variant]} ${className}`}
+    >
       {children}
     </button>
   );

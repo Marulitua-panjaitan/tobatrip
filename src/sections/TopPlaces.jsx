@@ -1,63 +1,21 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Compass } from 'lucide-react';
+import { Search, Compass, ArrowRight } from 'lucide-react'; // Tambah ArrowRight
+import { useNavigate } from 'react-router-dom'; // Tambah useNavigate
 import Card from '../components/Card';
 
-// Import gambar sesuai dengan asset yang Ketua gunakan
-import imgSamosir from '../assets/images/samosir.jpg';
-import imgHolbung from '../assets/images/bukitHolbung.jpg';
-import imgSipisopiso from '../assets/images/piso.jpg';
-import imgParapat2 from '../assets/images/parapat2.jpg';
-
-// 1. Data Destinasi Terpusat agar Sinkron dengan Card & PlaceDetail
-const placesData = [
-  {
-    id: "pulau-samosir",
-    title: "Pulau Samosir",
-    location: "Kabupaten Samosir",
-    rating: "4.9",
-    price: "Rp 1.250.000",
-    image: imgSamosir,
-    category: "Budaya"
-  },
-  {
-    id: "bukit-holbung",
-    title: "Bukit Holbung",
-    location: "Samosir",
-    rating: "4.8",
-    price: "Rp 850.000",
-    image: imgHolbung,
-    category: "Alam"
-  },
-  {
-    id: "air-terjun-sipiso-piso",
-    title: "Air Terjun Sipiso-piso",
-    location: "Merek, Karo",
-    rating: "4.7",
-    price: "Rp 950.000",
-    image: imgSipisopiso,
-    category: "Alam"
-  },
-  {
-    id: "parapat",
-    title: "Huta Ginjang",
-    location: "Muara, Taput",
-    rating: "4.6",
-    price: "Rp 750.000",
-    image: imgParapat2,
-    category: "Petualangan"
-  }
-];
+// IMPORT DATA PUSAT (Agar sinkron dengan ExplorePage)
+import { destinations } from '../data/destinations';
 
 const categories = ["Semua", "Alam", "Budaya", "Petualangan"];
 
 const TopPlaces = () => {
-  // 2. Deklarasi State untuk Input Search & Kategori
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
 
-  // 3. Logika Filter Utama (Kombinasi Search & Category)
-  const filteredPlaces = placesData.filter((place) => {
+  // LOGIKA FILTER: Kita gunakan data dari 'destinations' (15 tempat)
+  const filteredPlaces = destinations.filter((place) => {
     const matchesSearch = 
       place.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       place.location.toLowerCase().includes(searchQuery.toLowerCase());
@@ -67,6 +25,9 @@ const TopPlaces = () => {
 
     return matchesSearch && matchesCategory;
   });
+
+  // KITA AMBIL HANYA TOP 4 UNTUK HALAMAN DEPAN
+  const top4Places = filteredPlaces.slice(0, 4);
 
   return (
     <section id="destinasi" className="py-24 bg-slate-50">
@@ -87,8 +48,6 @@ const TopPlaces = () => {
 
         {/* Search & Filter Bar Container */}
         <div className="flex flex-col md:flex-row gap-6 justify-between items-center mb-12 bg-white p-6 rounded-[28px] shadow-sm border border-slate-100">
-          
-          {/* Kolom Search Input */}
           <div className="relative w-full md:w-96">
             <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
               <Search size={20} />
@@ -102,7 +61,6 @@ const TopPlaces = () => {
             />
           </div>
 
-          {/* Tombol Kategori (Pills) */}
           <div className="flex gap-2 overflow-x-auto w-full md:w-auto no-scrollbar py-1">
             {categories.map((category) => (
               <button
@@ -120,10 +78,10 @@ const TopPlaces = () => {
           </div>
         </div>
 
-        {/* Grid Cards dengan Animasi Transisi Halus (Framer Motion) */}
+        {/* Grid Cards - Menampilkan TOP 4 Saja */}
         <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <AnimatePresence mode="popLayout">
-            {filteredPlaces.map((place) => (
+            {top4Places.map((place) => (
               <motion.div
                 key={place.id}
                 layout
@@ -138,6 +96,19 @@ const TopPlaces = () => {
           </AnimatePresence>
         </motion.div>
 
+        {/* TOMBOL SELENGKAPNYA (Sama dengan Explore Now) */}
+        <div className="mt-16 text-center">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/destinasi')}
+            className="inline-flex items-center gap-3 bg-teal-500 text-white px-10 py-4 rounded-2xl font-black text-lg shadow-xl shadow-teal-500/20 hover:bg-teal-600 transition-all group"
+          >
+            Lihat Selengkapnya 
+            <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+          </motion.button>
+        </div>
+
         {/* State jika hasil pencarian kosong */}
         {filteredPlaces.length === 0 && (
           <motion.div 
@@ -147,7 +118,7 @@ const TopPlaces = () => {
           >
             <Compass className="mx-auto text-slate-300 mb-4 animate-spin-slow" size={48} />
             <h3 className="text-xl font-bold text-slate-700 font-poppins">Destinasi tidak ditemukan</h3>
-            <p className="text-slate-400 mt-2 text-sm font-inter">Coba masukkan kata kunci lain atau ganti kategori, Ketua.</p>
+            <p className="text-slate-400 mt-2 text-sm font-inter">Coba masukkan kata kunci lain, Ketua.</p>
           </motion.div>
         )}
 

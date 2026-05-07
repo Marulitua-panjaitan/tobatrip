@@ -1,20 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom'; // Import navigasi
 import Button from '../components/Button';
-// 1. Impor gambar lokal Ketua di sini
 import heroImg from '../assets/images/danau-toba.jpg'; 
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden bg-slate-900">
-      {/* 2. Tag untuk menampilkan gambar background */}
       <img 
         src={heroImg} 
         alt="Pemandangan Danau Toba" 
         className="absolute inset-0 w-full h-full object-cover opacity-60 z-0"
       />
 
-      {/* Overlay Gelap agar teks terbaca */}
       <div className="absolute inset-0 bg-black/30 z-10"></div>
 
       <div className="relative z-20 text-center text-white px-6">
@@ -35,9 +35,20 @@ const Hero = () => {
           Jelajahi kaldera vulkanik terbesar di dunia dan rasakan keajaiban budaya Batak.
         </motion.p>
 
-        <div className="flex justify-center gap-5">
-          <Button variant="primary">Explore Now</Button>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="flex justify-center gap-5"
+        >
+          {/* Sekarang onClick akan berfungsi karena sudah diterima oleh komponen Button */}
+          <Button 
+            variant="teal" 
+            onClick={() => navigate('/destinasi')}
+          >
+            Explore Now
+          </Button>
+        </motion.div>
       </div>
     </section>
   );

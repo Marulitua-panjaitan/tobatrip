@@ -1,66 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion'; 
-import { MapPin, Star, Clock, ShieldCheck, Camera, X } from 'lucide-react'; 
+import { MapPin, Star, Clock, ShieldCheck, Camera, X, ArrowLeft } from 'lucide-react'; 
 import Swal from 'sweetalert2';
 
-// Import gambar
-import imgSamosir from '../assets/images/samosir.jpg';
-import imgHolbung from '../assets/images/bukitHolbung.jpg';
-import imgSipisopiso from '../assets/images/piso.jpg';
-import imgParapat2 from '../assets/images/parapat2.jpg';
+// IMPORT DATA PUSAT (Agar sinkron dengan 15 destinasi)
+import { destinations } from '../data/destinations';
 
 const PlaceDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [selectedImg, setSelectedImg] = useState(null); 
   const [formData, setFormData] = useState({ name: '', email: '', date: '' }); 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Ambil data berdasarkan ID dari URL (id sekarang bisa berupa angka atau string)
+  const data = destinations.find(item => String(item.id) === id) || destinations[0];
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
-
-  const destinations = {
-    "pulau-samosir": {
-      title: "Pulau Samosir",
-      location: "Kabupaten Samosir",
-      rating: "4.9",
-      price: "Rp 1.250.000",
-      desc: "Jantung kebudayaan Batak yang terletak tepat di tengah Danau Toba. Menawarkan perpaduan sempurna antara wisata sejarah dan keindahan alam.",
-      image: imgSamosir,
-      feature: "Budaya & Sejarah"
-    },
-    "bukit-holbung": {
-      title: "Bukit Holbung",
-      location: "Samosir",
-      rating: "4.8",
-      price: "Rp 850.000",
-      desc: "Dikenal sebagai 'Bukit Teletubbies', tempat ini adalah spot camping terbaik dengan panorama 360 derajat Danau Toba.",
-      image: imgHolbung,
-      feature: "Panorama & Camping"
-    },
-    "air-terjun-sipiso-piso": {
-      title: "Air Terjun Sipiso-piso",
-      location: "Merek, Karo",
-      rating: "4.7",
-      price: "Rp 950.000",
-      desc: "Air terjun setinggi 120 meter yang jatuh langsung menuju bibir Danau Toba, menciptakan pemandangan ikonik.",
-      image: imgSipisopiso,
-      feature: "Wisata Alam"
-    },
-    "parapat": {
-      title: "Huta Ginjang",
-      location: "Muara, Taput",
-      rating: "4.6",
-      price: "Rp 750.000",
-      desc: "Spot terbaik untuk melihat luasnya Danau Toba dari ketinggian, populer untuk gantole dan paralayang.",
-      image: imgParapat2,
-      feature: "Olahraga Ekstrim"
-    }
-  };
-
-  const data = destinations[id] || destinations["pulau-samosir"];
 
   const handleBooking = (e) => {
     e.preventDefault();
@@ -109,7 +69,15 @@ const PlaceDetail = () => {
 
   return (
     <div className="bg-white min-h-screen font-inter text-slate-900">
-      {/* 1. HEADER IMAGE (Bersih Tanpa Icon Apapun) */}
+      {/* Tombol Back Mengambang */}
+      <button 
+        onClick={() => navigate(-1)}
+        className="fixed top-24 left-6 z-[50] bg-white/20 backdrop-blur-md p-3 rounded-full text-white border border-white/30 hover:bg-white hover:text-teal-600 transition-all shadow-xl"
+      >
+        <ArrowLeft size={24} />
+      </button>
+
+      {/* 1. HEADER IMAGE */}
       <div 
         className="relative h-[55vh] w-full overflow-hidden cursor-zoom-in group"
         onClick={() => setSelectedImg(data.image)}
@@ -131,7 +99,7 @@ const PlaceDetail = () => {
             {/* KIRI: INFO DESTINASI */}
             <div className="lg:w-2/3 space-y-10">
               <div className="flex items-center gap-3 text-teal-600 font-bold text-sm uppercase tracking-widest">
-                <span className="bg-teal-50 px-4 py-1.5 rounded-xl italic">{data.feature}</span>
+                <span className="bg-teal-50 px-4 py-1.5 rounded-xl italic">{data.category}</span>
                 <span className="flex items-center gap-2"><MapPin size={18} /> {data.location}</span>
               </div>
               <h1 className="text-5xl md:text-5xl font-black tracking-tighter leading-[0.9] font-poppins">{data.title}</h1>
@@ -149,11 +117,11 @@ const PlaceDetail = () => {
 
               <div className="space-y-6">
                 <h3 className="text-3xl font-black font-poppins tracking-tight">Tentang Destinasi</h3>
-                <p className="text-slate-500 leading-relaxed text-2xl font-light">{data.desc}</p>
+                <p className="text-slate-500 leading-relaxed text-2xl font-light">{data.description}</p>
               </div>
             </div>
 
-            {/* KANAN: BOOKING CARD (Fitur Pembayaran) */}
+            {/* KANAN: BOOKING CARD */}
             <div className="lg:w-1/3">
               <div className="bg-slate-950 text-white p-10 rounded-[45px] sticky top-28 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border border-slate-800">
                 <div className="mb-10">
@@ -162,6 +130,7 @@ const PlaceDetail = () => {
                 </div>
 
                 <form onSubmit={handleBooking} className="space-y-6">
+                  {/* Form fields tetap sama tapi datanya dinamis sesuai destinasi */}
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-widest">Nama Pelanggan</label>
                     <motion.input 
